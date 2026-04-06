@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<style>
+    .page-header {
+        margin-bottom: 3rem;
+    }
+    
+    .page-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+    
+    .page-header p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    .posts-grid {
+        display: grid;
+        gap: 2rem;
+    }
+
+    .post-card {
+        background-color: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .post-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
+        border-color: #e5e7eb;
+    }
+
+    .post-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        color: var(--text-main);
+    }
+    
+    .post-title a {
+        text-decoration: none;
+        color: inherit;
+        transition: color 0.2s ease;
+    }
+
+    .post-title a:hover {
+        color: var(--primary);
+    }
+
+    .post-meta {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .post-content-preview {
+        color: #4b5563;
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .read-more {
+        display: inline-block;
+        margin-top: 1rem;
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--surface);
+        border-radius: 16px;
+        border: 1px dashed #d1d5db;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Latest Articles</h1>
+    <p>Thoughts, ideas, and stories from our team.</p>
+</div>
+
+{% if posts %}
+<div class="posts-grid">
+    {% for post in posts %}
+    <article class="post-card">
+        <h2 class="post-title"><a href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></h2>
+        <div class="post-meta">
+            {{ post.date_posted.strftime('%B %d, %Y') }}
+        </div>
+        <div class="post-content-preview">
+            {{ post.content }}
+        </div>
+        <a href="{{ url_for('post', post_id=post.id) }}" class="read-more">Read article &rarr;</a>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">No posts yet</h3>
+    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Be the first to publish something awesome.</p>
+    <a href="{{ url_for('new_post') }}" class="btn btn-primary">Write a Post</a>
+</div>
+{% endif %}
+{% endblock %}

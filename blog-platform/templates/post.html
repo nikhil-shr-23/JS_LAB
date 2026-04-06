@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<style>
+    .post-header {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .post-title {
+        font-size: 3rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 1rem;
+        line-height: 1.1;
+    }
+
+    .post-meta {
+        color: var(--text-muted);
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .post-body {
+        font-size: 1.15rem;
+        line-height: 1.8;
+        color: #374151;
+        white-space: pre-wrap;
+        margin-bottom: 4rem;
+    }
+    
+    .post-actions {
+        display: flex;
+        gap: 1rem;
+        border-top: 1px dashed var(--border);
+        padding-top: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<article>
+    <header class="post-header">
+        <a href="{{ url_for('index') }}" style="color: var(--primary); text-decoration: none; font-weight: 600; display: inline-block; margin-bottom: 1.5rem;">&larr; Back to all posts</a>
+        <h1 class="post-title">{{ post.title }}</h1>
+        <div class="post-meta">
+            Published on {{ post.date_posted.strftime('%B %d, %Y') }}
+        </div>
+    </header>
+    
+    <div class="post-body">{{ post.content }}</div>
+    
+    <div class="post-actions">
+        <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this post?');">Delete Post</button>
+        </form>
+    </div>
+</article>
+{% endblock %}

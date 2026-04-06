@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<style>
+    .form-container {
+        background: var(--surface);
+        padding: 3rem;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .form-container h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #374151;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        font-family: inherit;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2);
+    }
+    
+    textarea.form-control {
+        resize: vertical;
+        min-height: 200px;
+    }
+
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Create a New Post</h1>
+    <form method="POST" action="">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" class="form-control" required placeholder="A catchy title...">
+        </div>
+        
+        <div class="form-group">
+            <label for="content">Content</label>
+            <textarea id="content" name="content" class="form-control" required placeholder="Write your story here..."></textarea>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Publish Post</button>
+            <a href="{{ url_for('index') }}" class="btn btn-outline" style="background: transparent; color: var(--text-muted); border-color: transparent;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
