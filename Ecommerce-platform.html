@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Modern Shop</title>
+
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  background: #f0f2f5;
+}
+
+/* HEADER */
+header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 15px;
+  background: #111;
+  color: white;
+}
+
+header input, header select {
+  padding: 8px;
+  border-radius: 5px;
+  border: none;
+}
+
+/* PRODUCTS */
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.product {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: 0.3s;
+}
+
+.product:hover {
+  transform: translateY(-5px);
+}
+
+.product img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.product-content {
+  padding: 15px;
+  text-align: center;
+}
+
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin-top: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+/* CART */
+.cart {
+  position: fixed;
+  right: -320px;
+  top: 0;
+  width: 300px;
+  height: 100%;
+  background: white;
+  padding: 20px;
+  transition: 0.3s;
+  box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+  overflow-y: auto;
+}
+
+.cart.active {
+  right: 0;
+}
+
+.cart li {
+  margin-bottom: 10px;
+  list-style: none;
+}
+
+.qty-btn {
+  padding: 2px 6px;
+  margin: 0 5px;
+  background: #28a745;
+}
+
+.remove {
+  background: red;
+}
+
+.checkout {
+  width: 100%;
+  background: green;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🛍️ Modern Shop</h1>
+
+  <input type="text" id="search" placeholder="Search products...">
+
+  <select id="category">
+    <option value="all">All</option>
+    <option value="clothing">Clothing</option>
+    <option value="electronics">Electronics</option>
+  </select>
+
+  <button onclick="toggleCart()">🛒 (<span id="cart-count">0</span>)</button>
+</header>
+
+<section class="products" id="product-list"></section>
+
+<!-- CART -->
+<div class="cart" id="cart">
+  <h2>Your Cart</h2>
+  <ul id="cart-items"></ul>
+  <h3>Total: ₹<span id="cart-total">0</span></h3>
+  <button class="checkout" onclick="checkout()">Checkout</button>
+</div>
+
+<script>
+const products = [
+  { id: 1, name: "T-Shirt", price: 500, category: "clothing", image: "https://via.placeholder.com/300" },
+  { id: 2, name: "Sneakers", price: 2000, category: "clothing", image: "https://via.placeholder.com/300" },
+  { id: 3, name: "Smart Watch", price: 3000, category: "electronics", image: "https://via.placeholder.com/300" },
+  { id: 4, name: "Headphones", price: 1500, category: "electronics", image: "https://via.placeholder.com/300" }
+];
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+const productList = document.getElementById("product-list");
+
+// DISPLAY PRODUCTS
+function displayProducts(items) {
+  productList.innerHTML = "";
+
+  items.forEach(product => {
+    const div = document.createElement("div");
+    div.classList.add("product");
+
+    div.innerHTML = `
+      <img src="${product.image}">
+      <div class="product-content">
+        <h3>${product.name}</h3>
+        <p>₹${product.price}</p>
+        <button onclick="addToCart(${product.id})">Add</button>
+      </div>
+    `;
+
+    productList.appendChild(div);
+  });
+}
+
+// ADD TO CART
+function addToCart(id) {
+  const item = cart.find(p => p.id === id);
+
+  if (item) {
+    item.qty++;
+  } else {
+    const product = products.find(p => p.id === id);
+    cart.push({ ...product, qty: 1 });
+  }
+
+  updateCart();
+}
+
+// UPDATE CART
+function updateCart() {
+  const cartItems = document.getElementById("cart-items");
+  const cartCount = document.getElementById("cart-count");
+  const total = document.getElementById("cart-total");
+
+  cartItems.innerHTML = "";
+  let sum = 0;
+
+  cart.forEach(item => {
+    sum += item.price * item.qty;
+
+    const li = document.createElement("li");
+    li.innerHTML = `
+      ${item.name} (₹${item.price})
+      <br>
+      <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
+      ${item.qty}
+      <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+      <button class="remove" onclick="removeItem(${item.id})">x</button>
+    `;
+
+    cartItems.appendChild(li);
+  });
+
+  cartCount.textContent = cart.length;
+  total.textContent = sum;
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+// CHANGE QTY
+function changeQty(id, delta) {
+  const item = cart.find(p => p.id === id);
+  item.qty += delta;
+
+  if (item.qty <= 0) {
+    cart = cart.filter(p => p.id !== id);
+  }
+
+  updateCart();
+}
+
+// REMOVE ITEM
+function removeItem(id) {
+  cart = cart.filter(p => p.id !== id);
+  updateCart();
+}
+
+// TOGGLE CART
+function toggleCart() {
+  document.getElementById("cart").classList.toggle("active");
+}
+
+// SEARCH
+document.getElementById("search").addEventListener("input", e => {
+  const value = e.target.value.toLowerCase();
+  const filtered = products.filter(p => p.name.toLowerCase().includes(value));
+  displayProducts(filtered);
+});
+
+// FILTER
+document.getElementById("category").addEventListener("change", e => {
+  const value = e.target.value;
+  if (value === "all") return displayProducts(products);
+
+  const filtered = products.filter(p => p.category === value);
+  displayProducts(filtered);
+});
+
+// CHECKOUT
+function checkout() {
+  if (cart.length === 0) {
+    alert("Cart is empty!");
+    return;
+  }
+
+  alert("Order placed successfully! 🎉");
+  cart = [];
+  updateCart();
+}
+
+// INIT
+displayProducts(products);
+updateCart();
+</script>
+
+</body>
+</html>
